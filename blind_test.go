@@ -43,3 +43,24 @@ func TestIntegration(t *testing.T) {
 		panic(err)
 	}
 }
+
+
+func setup(nemployees int) (*Signer, []*Employee) {
+	signer := NewSigner()
+
+	employees := make([]*Employee, nemployees)
+	keys := make([]rsa.PublicKey, nemployees)
+
+	for i := 0; i < nemployees; i++ {
+		e := NewEmployee(signer.PublicKey)
+		employees[i] = e
+		keys[i] = *e.PublicKey
+	}
+	return signer, employees
+}
+
+
+func TestAuth(t *testing.T) {
+	//signer, employees := setup(3)
+	_, _ = setup(3)
+}
