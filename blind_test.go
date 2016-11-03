@@ -1,41 +1,42 @@
 package blinding
 
 import (
-    "crypto/rand"
-    "crypto/rsa"
 	"testing"
 )
 
 func Test(t * testing.T) {
     // Set up the signer
-    key, _ := rsa.GenerateKey(rand.Reader, Keysize)
+	signer := NewSigner()
+	sigkey := signer.GetPub()
+	key := sigkey
 
 	// Set up the employee
+	employee := NewEmployee(&sigkey)
 	message := []byte("a living wage")
 
     // employee blinds the message
-    blinded, unblinder, err := BlindSalary(message, &key.PublicKey)
+    blinded, err := employee.BlindSalary(message)
     if err != nil {
         panic(err)
     }
 	// employee sends it to the signer
 
     // signer signs the blinded message
-    blindsig, err := SignSalary(blinded, key)
+    blindsig, err := signer.SignSalary(blinded)
     if err != nil {
         panic(err)
     }
 	// signer returns the signature to the employee
 
 	// employee unblinds the signature and checks it against her original message
-	sig, err := Unblind(message, blindsig, unblinder, &key.PublicKey)
+	sig, err := employee.Unblind(blindsig)
 	if err != nil {
 		panic(err)
 	}
 	// employee posts the salary and sign somewhere annonymously
 
 	// someone checks the salaries signature
-	err = VerifySallary(message, sig, &key.PublicKey)
+	err = employee.VerifySallary(message, sig, &key)
 	if err != nil {
 		panic(err)
 	}
