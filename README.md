@@ -13,11 +13,11 @@ So they decide to do something like this:
 
 ## setup
 They prepare as a group:
-* Agree who the N employees who will participate are
-* Agree on a third party who creates a new RSA key specifically for this event
-* Agree on an anonymous forum to post the salaries
-* Every employee generates an RSA key pair
-* Give the third party the authorized employee's public keys
+* agree who the N employees who will participate are
+* agree on a third party who creates a new RSA key specifically for this event
+* agree on an anonymous forum to post the salaries
+* every employee generates an RSA key pair
+* give the third party the authorized employee's public keys
 
 # blinding
 Then each employee does a few things:
@@ -29,7 +29,8 @@ Then each employee does a few things:
 
 # signing
 The third party then takes each message and:
-* checks the key belongs to an authorized employee who has not already submitted a message
+* checks the key belongs to an authorized employee
+* checks this employee has not already submitted a message
 * checks the signature
 * signs the message
 * returns the signature to whoever sent it
