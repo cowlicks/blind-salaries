@@ -1,10 +1,11 @@
 package blinding
 
 import (
+    "crypto/rsa"
 	"testing"
 )
 
-func Test(t * testing.T) {
+func TestIntegration(t * testing.T) {
     // Set up the signer
 	signer := NewSigner()
 	sigkey := signer.GetPub()
@@ -12,17 +13,21 @@ func Test(t * testing.T) {
 
 	// Set up the employee
 	employee := NewEmployee(&sigkey)
+	empkey := employee.GetPub()
 	message := []byte("a living wage")
 
+	// add employees to signer
+	signer.AddEmployees([]rsa.PublicKey{employee.GetPub()})
+
     // employee blinds the message
-    blinded, err := employee.BlindSalary(message)
+    blinded, bsig, err := employee.BlindSalary(message)
     if err != nil {
         panic(err)
     }
 	// employee sends it to the signer
 
     // signer signs the blinded message
-    blindsig, err := signer.SignSalary(blinded)
+    blindsig, err := signer.SignSalary(blinded, bsig, &empkey)
     if err != nil {
         panic(err)
     }
