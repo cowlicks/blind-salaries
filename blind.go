@@ -139,7 +139,7 @@ func (s *Signer) AddEmployees(pubkeys []rsa.PublicKey) {
 }
 
 func (s *Signer) SignSalary(message *BlindedMessage) (sig []byte, err error) {
-	err = s.authMessage(message)
+	err = s.authSignature(message)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func (s *Signer) SignSalary(message *BlindedMessage) (sig []byte, err error) {
 	return sig, nil
 }
 
-func (s *Signer) authMessage(message *BlindedMessage) error {
+func (s *Signer) authSignature(message *BlindedMessage) error {
 	val, ok := s.employees[message.PublicKey]
 	if !ok {
 		return errors.New("Employee not registered")
