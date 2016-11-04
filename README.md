@@ -1,7 +1,14 @@
-Protocol for anonymous salary reporting based on an e-voting scheme.
+This package implements a protocol for anonymous salary reporting based on an
+e-voting scheme.
 
-Suppose a group of N employees want to compare their pay by revealing how much they make.
-But each employee doesn't want the others to know what her individual salary is.
+Suppose a group of N employees want to compare their pay by revealing how much
+they make. But each employee doesn't want the others to know what her
+individual salary is.
+
+They could try getting everyone to post their salary annonymously in some forum,
+like on a google doc through tor. But then there would be no way of verifying
+what was posted  actually came from an employee. Or employees could post multiple
+times.
 
 Here are some requirements they want:
 * Anonymity. No one can associate a reported salary with an employee.
@@ -61,7 +68,7 @@ They prepare as a group:
 * every employee generates an RSA key pair
 * give the third party the authorized employee's public keys
 
-# blinding
+## blinding
 Then each employee does a few things:
 * writes her salary down
 * hashes the salary
@@ -69,7 +76,7 @@ Then each employee does a few things:
 * signs this blinded hash with her own public key
 * sends this signed blinded hash to the 3rd party 
 
-# signing
+## signing
 The third party then takes each message and:
 * checks the key belongs to an authorized employee
 * checks this employee has not already submitted a message
@@ -77,7 +84,7 @@ The third party then takes each message and:
 * signs the message
 * returns the signature to whoever sent it
 
-# verifying
+## verifying
 Each employee get a blinded signature back, she then:
 * unblinds the signature
 * checks the validity of the unblinded signature with the third parties public key and the hash of her salary
