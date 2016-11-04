@@ -48,6 +48,7 @@ type Employee struct {
 	message    []byte
 	unblinder  []byte
 	PublicKey *rsa.PublicKey
+	has_blinded bool
 }
 
 func NewEmployee(signerskey *rsa.PublicKey) (*Employee, error) {
@@ -55,11 +56,17 @@ func NewEmployee(signerskey *rsa.PublicKey) (*Employee, error) {
 	if err != nil {
 		return nil, errors.New("Error creating Employee RSA key")
 	}
-	return &Employee{key, signerskey, nil, nil, &key.PublicKey}, nil
+	return &Employee{key, signerskey, nil, nil, &key.PublicKey, false}, nil
 }
 
 // employee salary blinding function
 func (e *Employee) BlindSalary(message []byte) (*BlindedMessage, error) {
+	if e.has_blinded {
+		return nil, errors.New("Employee already blinded a message")
+	} else {
+		e.has_blinded = true
+	}
+
 	e.message = message
 
 	// We do a SHA256 full-domain-hash expanded to 1536 bits (3/4 the key size)
