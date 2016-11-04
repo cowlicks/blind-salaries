@@ -8,6 +8,7 @@ package blinding
 
 import (
 	"errors"
+	"encoding/base64"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -41,6 +42,13 @@ func VerifyPSS(message, sig []byte, pubkey *rsa.PublicKey) error {
 	hashed := sha256.Sum256(message)
 	err = rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
 	return err
+}
+
+func FinalMessage(salary, sig []byte) string {
+	out := "salary: "
+	out += string(salary) + "\nsignature: "
+	out += base64.StdEncoding.EncodeToString(sig)
+	return out
 }
 
 type BlindedMessage struct {
