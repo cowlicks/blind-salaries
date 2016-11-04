@@ -5,7 +5,7 @@ Suppose a group of N employees want to compare their pay by revealing how much
 they make. But each employee doesn't want the others to know what her
 individual salary is.
 
-They could try getting everyone to post their salary annonymously in some forum,
+They could try getting everyone to post their salary anonymously in some forum,
 like on a google doc through tor. But then there would be no way of verifying
 what was posted  actually came from an employee. Or employees could post multiple
 times.
@@ -19,18 +19,18 @@ Here are some requirements they want:
 This package tries to do this, here is a basic example of the usage:
 
 ```go
-// Set up the signer
+// Set up the signer.
 signer, _ := NewSigner()
 
-// Set up the employees
+// Set up the employees.
 alice, _ := NewEmployee(signer.PublicKey)
 bob, _ := NewEmployee(signer.PublicKey)
 
-// add employees to signer
+// Add employees to signer.
 signer.AddEmployees([]rsa.PublicKey{*alice.PublicKey,
                                     *bob.PublicKey})
 
-// Alice and Bob write down their salaries
+// Alice and Bob write down their salaries.
 aliceSal := []byte("Below the glass ceiling")
 bobSal   := []byte("A living wage")
 
@@ -43,11 +43,11 @@ bobBlindMsg, _		:= bob.BlindSalary(bobSal)
 aliceBlindSig, _	:= signer.SignSalary(aliceBlindMsg)
 bobBlindSig, _		:= signer.SignSalary(bobBlindMsg)
 
-// Alice and bob unblind their signature
+// Alice and Bob unblind their signature.
 aliceSig, _	:= alice.Unblind(aliceBlindSig)
 bobSig, _   := bob.Unblind(bobBlindSig)
 
-// They post the salaries and signatures anonymously somewhere
+// They post thier salaries and signatures anonymously somewhere.
 fmt.Println(FinalMessage(aliceSal, aliceSig))
 fmt.Println(FinalMessage(bobSal, bobSig))
 ```
