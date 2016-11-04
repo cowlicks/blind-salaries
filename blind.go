@@ -1,6 +1,7 @@
 package blinding
 
 import (
+	"errors"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
@@ -49,12 +50,12 @@ type Employee struct {
 	PublicKey *rsa.PublicKey
 }
 
-func NewEmployee(signerskey *rsa.PublicKey) *Employee {
+func NewEmployee(signerskey *rsa.PublicKey) (*Employee, error) {
 	key, err := rsa.GenerateKey(rand.Reader, Keysize)
 	if err != nil {
-		panic(err)
+		return nil, errors.New("Error creating Employee RSA key")
 	}
-	return &Employee{key, signerskey, nil, nil, &key.PublicKey}
+	return &Employee{key, signerskey, nil, nil, &key.PublicKey}, nil
 }
 
 // employee salary blinding function
@@ -67,12 +68,15 @@ func (e *Employee) BlindSalary(message []byte) (*BlindedMessage, error) {
 	// Blind the hashed message
 	blind, unblinder, err := rsablind.Blind(e.signerskey, hashed)
 	if err != nil {
-		panic(err)
+		return nil, errors.New("Error blinding message")
 	}
 	e.unblinder = unblinder
 
 	sig, err := SignPSS(blind, e.key)
-	return &BlindedMessage{blind, sig, *e.PublicKey}, err
+	if err != nil {
+		return nil, errors.New("Error signing blinded message")
+	}
+	return &BlindedMessage{blind, sig, *e.PublicKey}, nil
 }
 
 // employee unblinds and checks sig
@@ -83,9 +87,9 @@ func (e *Employee) Unblind(blindSig []byte) ([]byte, error) {
 	// verify the sig
 	err = e.VerifySallary(e.message, unBlindedSig, e.signerskey)
 	if err != nil {
-		return ErrSlice, err
+		return nil, err
 	}
-	return unBlindedSig, err
+	return unBlindedSig, nil
 }
 
 func (e *Employee) VerifySallary(message, sig []byte, signerspubkey *rsa.PublicKey) error {
@@ -101,12 +105,12 @@ type Signer struct {
 	PublicKey *rsa.PublicKey
 }
 
-func NewSigner() *Signer {
+func NewSigner() (*Signer, error) {
 	key, err := rsa.GenerateKey(rand.Reader, Keysize)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return &Signer{key, nil, &key.PublicKey}
+	return &Signer{key, nil, &key.PublicKey}, nil
 }
 
 func (s *Signer) AddEmployees(pubkeys []rsa.PublicKey) {
@@ -120,18 +124,22 @@ func (s *Signer) AddEmployees(pubkeys []rsa.PublicKey) {
 func (s *Signer) SignSalary(message *BlindedMessage) (sig []byte, err error) {
 	err = s.authMessage(message)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return rsablind.BlindSign(s.key, message.Blinded)
+	sig, err = rsablind.BlindSign(s.key, message.Blinded)
+	if err != nil {
+		return nil, err
+	}
+	return sig, nil
 }
 
 func (s *Signer) authMessage(message *BlindedMessage) error {
 	val, ok := s.employees[message.PublicKey]
 	if !ok {
-		panic("bad employee")
+		return errors.New("Employee not registered")
 	}
 	if val {
-		panic("Employee already sent message")
+		return errors.New("Employee already sent message")
 	}
 	return VerifyPSS(message.Blinded, message.Sig, &message.PublicKey)
 }
