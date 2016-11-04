@@ -1,3 +1,9 @@
+// Note that there are two types of signing/verifying going on.
+// 1. The blind signature done by the Signer, done by SignSallary and
+//    VerifySallary.  This uses rsablind.
+// 2. The signing done by employees to ensure the authenticity of their message
+//    to the Signer. Done by SignPSS/VerifyPSS.
+
 package blinding
 
 import (
@@ -12,21 +18,25 @@ import (
 
 var Keysize = 2048
 var Hashize = 1536
-var ErrSlice = []byte("Error")
 var err error
 
-// Other functions
+/*********************
+	   Utilities
+**********************/
+// verify blinded sig on the sallary
 func VerifySallary(message, sig []byte, signerspubkey *rsa.PublicKey) error {
 	hashed := fdh.Sum(crypto.SHA256, Hashize, message)
 	return rsablind.VerifyBlindSignature(signerspubkey, hashed, sig)
 }
 
+// sign blinded message
 func SignPSS(message []byte, privkey *rsa.PrivateKey) ([]byte, error) {
 	rng := rand.Reader
 	hashed := sha256.Sum256(message)
 	return rsa.SignPSS(rng, privkey, crypto.SHA256, hashed[:], nil)
 }
 
+// verify sig on blinded message
 func VerifyPSS(message, sig []byte, pubkey *rsa.PublicKey) error {
 	hashed := sha256.Sum256(message)
 	err = rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
