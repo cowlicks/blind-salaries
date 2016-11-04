@@ -3,6 +3,7 @@ package blinding
 import (
 	"crypto/rsa"
 	"testing"
+	"fmt"
 )
 
 func TestIntegration(t *testing.T) {
@@ -96,4 +97,37 @@ func TestEmployeeCanOnlyBlindOnce(t *testing.T) {
 	if err == nil {
 		t.Fatal()
 	}
+}
+
+func TestREADME(t *testing.T) {
+	// Set up the signer
+	signer, _ := NewSigner()
+
+	// Set up the employees
+	alice, _ := NewEmployee(signer.PublicKey)
+	bob, _ := NewEmployee(signer.PublicKey)
+
+	// add employees to signer
+	signer.AddEmployees([]rsa.PublicKey{*alice.PublicKey, *bob.PublicKey})
+
+	// Alice and Bob write down their salaries
+	aliceSal := []byte("Below the glass ceiling")
+	bobSal   := []byte("A living wage")
+
+	// They blind their salaries and sign them.
+	aliceBlindMsg, _	:= alice.BlindSalary(aliceSal)
+	bobBlindMsg, _		:= bob.BlindSalary(bobSal)
+
+	// The signer verifies each message is authorized, and signs it.
+	// The message is encrypted (blinded). The signer cannot read it.
+	aliceBlindSig, _	:= signer.SignSalary(aliceBlindMsg)
+	bobBlindSig, _		:= signer.SignSalary(bobBlindMsg)
+
+	// Alice and bob unblind their signature
+	aliceSig, _	:= alice.Unblind(aliceBlindSig)
+	bobSig, _   := bob.Unblind(bobBlindSig)
+
+	// They post the salaries and signatures anonymously somewhere
+	fmt.Println(FinalMessage(aliceSal, aliceSig))
+	fmt.Println(FinalMessage(bobSal, bobSig))
 }
