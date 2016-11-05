@@ -24,7 +24,7 @@ signer, _ := NewSigner()
 
 // Set up the employees.
 alice, _ := NewEmployee(signer.PublicKey)
-bob, _ := NewEmployee(signer.PublicKey)
+bob, _   := NewEmployee(signer.PublicKey)
 
 // Add employees to signer.
 signer.AddEmployees([]rsa.PublicKey{*alice.PublicKey,
