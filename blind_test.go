@@ -90,7 +90,7 @@ func TestEmployeeCanOnlyBlindOnce(t *testing.T) {
 	_, employees := setup(1)
 	employee := employees[0]
 	employee.BlindSalary([]byte("once"))
-	_, err = employee.BlindSalary([]byte("twice"))
+	_, err := employee.BlindSalary([]byte("twice"))
 	if err == nil {
 		t.Fatal()
 	}

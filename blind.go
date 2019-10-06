@@ -19,7 +19,6 @@ import (
 
 var Keysize = 2048
 var Hashize = 1536
-var err error
 
 /*********************
 	   Utilities
@@ -40,7 +39,7 @@ func SignPSS(message []byte, privkey *rsa.PrivateKey) ([]byte, error) {
 // verify sig on blinded message
 func VerifyPSS(message, sig []byte, pubkey *rsa.PublicKey) error {
 	hashed := sha256.Sum256(message)
-	err = rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
+	err := rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
 	return err
 }
 
@@ -110,7 +109,7 @@ func (e *Employee) Unblind(blindSig []byte) ([]byte, error) {
 	unBlindedSig := rsablind.Unblind(e.signerskey, blindSig, e.unblinder)
 
 	// verify the sig
-	err = e.VerifySallary(e.message, unBlindedSig, e.signerskey)
+	err := e.VerifySallary(e.message, unBlindedSig, e.signerskey)
 	if err != nil {
 		return nil, err
 	}
