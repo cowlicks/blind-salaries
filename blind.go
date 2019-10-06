@@ -7,12 +7,12 @@
 package blinding
 
 import (
-	"errors"
-	"encoding/base64"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"encoding/base64"
+	"errors"
 	"github.com/cryptoballot/fdh"
 	"github.com/cryptoballot/rsablind"
 )
@@ -52,20 +52,20 @@ func FinalMessage(salary, sig []byte) string {
 }
 
 type BlindedMessage struct {
-	Blinded []byte
-	Sig		[]byte
-	PublicKey	rsa.PublicKey
+	Blinded   []byte
+	Sig       []byte
+	PublicKey rsa.PublicKey
 }
 
 /*********************
 	   Employee
 **********************/
 type Employee struct {
-	key        *rsa.PrivateKey
-	signerskey *rsa.PublicKey
-	message    []byte
-	unblinder  []byte
-	PublicKey *rsa.PublicKey
+	key         *rsa.PrivateKey
+	signerskey  *rsa.PublicKey
+	message     []byte
+	unblinder   []byte
+	PublicKey   *rsa.PublicKey
 	has_blinded bool
 }
 

@@ -44,7 +44,6 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
-
 // Creates a signer, some employees, and registers them
 func setup(nemployees int) (*Signer, []*Employee) {
 	signer, _ := NewSigner()
@@ -59,7 +58,6 @@ func setup(nemployees int) (*Signer, []*Employee) {
 	}
 	return signer, employees
 }
-
 
 func TestOneSigPerEmployee(t *testing.T) {
 	// test employee can't get two sigs
