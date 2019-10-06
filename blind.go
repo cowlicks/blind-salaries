@@ -17,8 +17,10 @@ import (
 	"github.com/cryptoballot/rsablind"
 )
 
-var Keysize = 2048
-var Hashize = 1536
+const (
+	Keysize = 4096
+	Hashize = 3072
+)
 
 /*********************
 	   Utilities
