@@ -3,7 +3,6 @@ package blinding
 import (
 	"crypto/rsa"
 	"testing"
-	"fmt"
 )
 
 func TestIntegration(t *testing.T) {
