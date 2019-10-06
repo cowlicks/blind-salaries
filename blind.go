@@ -156,6 +156,7 @@ func (s *Signer) SignSalary(message *BlindedMessage) (sig []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
+	s.employees[message.PublicKey] = true
 	return sig, nil
 }
 

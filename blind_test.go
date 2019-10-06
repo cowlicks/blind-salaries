@@ -56,6 +56,7 @@ func setup(nemployees int) (*Signer, []*Employee) {
 		employees[i] = e
 		keys[i] = *e.PublicKey
 	}
+	signer.AddEmployees(keys)
 	return signer, employees
 }
 
@@ -66,8 +67,12 @@ func TestOneSigPerEmployee(t *testing.T) {
 	bmsg, _ := employee.BlindSalary([]byte("message one"))
 
 	// try to sign twice
-	signer.SignSalary(bmsg)
 	_, err := signer.SignSalary(bmsg)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = signer.SignSalary(bmsg)
 	if err == nil {
 		t.Fatal("Signer managed to sign the same employee twice")
 	}
