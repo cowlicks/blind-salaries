@@ -69,7 +69,7 @@ func TestOneSigPerEmployee(t *testing.T) {
 	signer.SignSalary(bmsg)
 	_, err := signer.SignSalary(bmsg)
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Signer managed to sign the same employee twice")
 	}
 }
 
@@ -82,7 +82,7 @@ func TestOnlyRegisteredEmployees(t *testing.T) {
 	// try to sign while not registered
 	_, err := signer.SignSalary(bmsg)
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Signer managed to sign unregistered employee")
 	}
 }
 
@@ -92,6 +92,6 @@ func TestEmployeeCanOnlyBlindOnce(t *testing.T) {
 	employee.BlindSalary([]byte("once"))
 	_, err := employee.BlindSalary([]byte("twice"))
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Employee managed to sign twice")
 	}
 }
