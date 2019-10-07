@@ -7,19 +7,20 @@
 package blinding
 
 import (
-	"errors"
-	"encoding/base64"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"encoding/base64"
+	"errors"
 	"github.com/cryptoballot/fdh"
 	"github.com/cryptoballot/rsablind"
 )
 
-var Keysize = 2048
-var Hashize = 1536
-var err error
+const (
+	Keysize = 4096
+	Hashize = 3072
+)
 
 /*********************
 	   Utilities
@@ -40,7 +41,7 @@ func SignPSS(message []byte, privkey *rsa.PrivateKey) ([]byte, error) {
 // verify sig on blinded message
 func VerifyPSS(message, sig []byte, pubkey *rsa.PublicKey) error {
 	hashed := sha256.Sum256(message)
-	err = rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
+	err := rsa.VerifyPSS(pubkey, crypto.SHA256, hashed[:], sig, nil)
 	return err
 }
 
@@ -52,20 +53,20 @@ func FinalMessage(salary, sig []byte) string {
 }
 
 type BlindedMessage struct {
-	Blinded []byte
-	Sig		[]byte
-	PublicKey	rsa.PublicKey
+	Blinded   []byte
+	Sig       []byte
+	PublicKey rsa.PublicKey
 }
 
 /*********************
 	   Employee
 **********************/
 type Employee struct {
-	key        *rsa.PrivateKey
-	signerskey *rsa.PublicKey
-	message    []byte
-	unblinder  []byte
-	PublicKey *rsa.PublicKey
+	key         *rsa.PrivateKey
+	signerskey  *rsa.PublicKey
+	message     []byte
+	unblinder   []byte
+	PublicKey   *rsa.PublicKey
 	has_blinded bool
 }
 
@@ -110,7 +111,7 @@ func (e *Employee) Unblind(blindSig []byte) ([]byte, error) {
 	unBlindedSig := rsablind.Unblind(e.signerskey, blindSig, e.unblinder)
 
 	// verify the sig
-	err = e.VerifySallary(e.message, unBlindedSig, e.signerskey)
+	err := e.VerifySallary(e.message, unBlindedSig, e.signerskey)
 	if err != nil {
 		return nil, err
 	}
@@ -155,6 +156,7 @@ func (s *Signer) SignSalary(message *BlindedMessage) (sig []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
+	s.employees[message.PublicKey] = true
 	return sig, nil
 }
 

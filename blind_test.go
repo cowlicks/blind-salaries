@@ -3,7 +3,6 @@ package blinding
 import (
 	"crypto/rsa"
 	"testing"
-	"fmt"
 )
 
 func TestIntegration(t *testing.T) {
@@ -45,7 +44,6 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
-
 // Creates a signer, some employees, and registers them
 func setup(nemployees int) (*Signer, []*Employee) {
 	signer, _ := NewSigner()
@@ -58,9 +56,9 @@ func setup(nemployees int) (*Signer, []*Employee) {
 		employees[i] = e
 		keys[i] = *e.PublicKey
 	}
+	signer.AddEmployees(keys)
 	return signer, employees
 }
-
 
 func TestOneSigPerEmployee(t *testing.T) {
 	// test employee can't get two sigs
@@ -69,10 +67,14 @@ func TestOneSigPerEmployee(t *testing.T) {
 	bmsg, _ := employee.BlindSalary([]byte("message one"))
 
 	// try to sign twice
-	signer.SignSalary(bmsg)
 	_, err := signer.SignSalary(bmsg)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = signer.SignSalary(bmsg)
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Signer managed to sign the same employee twice")
 	}
 }
 
@@ -85,7 +87,7 @@ func TestOnlyRegisteredEmployees(t *testing.T) {
 	// try to sign while not registered
 	_, err := signer.SignSalary(bmsg)
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Signer managed to sign unregistered employee")
 	}
 }
 
@@ -93,8 +95,8 @@ func TestEmployeeCanOnlyBlindOnce(t *testing.T) {
 	_, employees := setup(1)
 	employee := employees[0]
 	employee.BlindSalary([]byte("once"))
-	_, err = employee.BlindSalary([]byte("twice"))
+	_, err := employee.BlindSalary([]byte("twice"))
 	if err == nil {
-		t.Fatal()
+		t.Fatal("Employee managed to sign twice")
 	}
 }
