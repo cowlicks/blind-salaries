@@ -51,7 +51,9 @@ bobSig, _   := bob.Unblind(bobBlindSig)
 fmt.Println(FinalMessage(aliceSal, aliceSig))
 fmt.Println(FinalMessage(bobSal, bobSig))
 ```
+
 <hr>
+
 ```
 salary: Below the glass ceiling
 signature: O1k/UWPdtS5A2QFfMUxMwQjPlZIqvv6on27c3kxhW0CaI9MkvmCGTpxyO5a4BZP3jEzeHnvRswEAIGVMNmYZRgUg5suinE1UmPJoOma+92WICJAps50/nRzV6QjoU87zjPN8pNVohxO3zRNnkpRoH0OzDdS+BzjkmZ/GZy5/gXB6VZ9GY4Pn6JeorVG/0OpkHwVaP0PNzpWZ6hheuMpUhAywE9pXQY9F+mF1BmZJg5MOMwTgZ7rAKxnkUjg+3K4SMZ0iZ7lG5EiQOXdXAm+ra3F2Q1WlPtanVKKpPJ6ZsXSSW7s3TkOACa0lhDD5vrRnOGFinuz5QijUMEZ1E7sv2w==
